@@ -1,7 +1,6 @@
 const ADMIN_PIN = "1234"; 
 
 function doGet() {
-  // app.htmlを読み込み、外部サイトからの埋め込みを許可する
   return HtmlService.createTemplateFromFile('app').evaluate()
     .setTitle('深夜シフト管理 - NEON')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
@@ -43,18 +42,25 @@ function createShiftEvent(dateIsoString, startTime, endTime, userName) {
   const start = new Date(date);
   const [sH, sM] = startTime.split(':');
   start.setHours(parseInt(sH), parseInt(sM), 0);
+
   const end = new Date(date);
   let displayEnd = endTime;
+
   if (endTime === "最終まで") {
-    end.setDate(end.getDate() + 1);
-    end.setHours(5, 0, 0);
     displayEnd = "最終";
+    // カレンダー占有防止：当日の23:59:59で止める
+    end.setHours(23, 59, 59);
   } else {
     const [eH, eM] = endTime.split(':');
     const hour = parseInt(eH);
-    if (hour <= 5) end.setDate(end.getDate() + 1);
-    end.setHours(hour, parseInt(eM), 0);
+    // 深夜帯でもカレンダー上は当日の23:59:59にする
+    if (hour <= 5) {
+      end.setHours(23, 59, 59);
+    } else {
+      end.setHours(hour, parseInt(eM), 0);
+    }
   }
+
   cal.createEvent(`【${userName}】${startTime}-${displayEnd}`, start, end);
   return true;
 }
