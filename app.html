@@ -9,66 +9,33 @@
     :root { --neon: #ff003c; --neon-glow: rgba(255, 0, 60, 0.8); --bg: #050505; --card: #151515; }
     body { font-family: sans-serif; background: var(--bg); color: #eee; margin: 0; padding: 0; }
     
-    /* カレンダー全体のデザイン調整 */
+    /* フィルターエリア（横スクロール可能） */
+    #filter-wrapper { background: #111; padding: 10px; border-bottom: 1px solid #222; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+    .filter-chip { display: inline-block; padding: 8px 18px; margin-right: 8px; border-radius: 20px; background: #222; color: #666; font-size: 0.85em; border: 1px solid #333; cursor: pointer; transition: 0.3s; }
+    .filter-chip.active { background: var(--neon); color: #fff; border-color: var(--neon); box-shadow: 0 0 10px var(--neon-glow); }
+
+    /* カレンダー */
     #calendar-container { padding: 5px; background: radial-gradient(circle at top, #1a050a 0%, var(--bg) 80%); }
-    .fc { max-width: 100%; background: transparent; font-size: 0.9em; }
     .fc-toolbar-title { font-weight: bold !important; color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+    .fc-event { border: none !important; padding: 2px !important; font-size: 0.85em !important; }
+    .confirmed-ultra { background: linear-gradient(45deg, var(--neon), #ff4d79) !important; box-shadow: 0 0 10px var(--neon-glow); font-weight: bold; color: #fff !important; }
 
-    /* 曜日ヘッダー */
-    .fc-col-header-cell { background: rgba(255, 255, 255, 0.03); padding: 8px 0 !important; color: #777 !important; font-weight: 300 !important; text-transform: uppercase; }
-    
-    /* 日付数字（デジタルフォント風） */
-    .fc-daygrid-day-number { color: #555; font-family: monospace; padding: 4px !important; text-decoration: none !important; }
-    .fc-day-today { background: rgba(255, 0, 60, 0.05) !important; }
-    .fc-day-today .fc-daygrid-day-number { color: var(--neon); text-shadow: 0 0 5px var(--neon); font-weight: bold; }
-
-    /* イベントを「光るドット」に変更 */
-    .fc-daygrid-event {
-      background: rgba(255, 255, 255, 0.1) !important;
-      border: none !important;
-      border-radius: 50% !important;
-      width: 7px !important;
-      height: 7px !important;
-      margin: 3px auto !important;
-      min-height: 0 !important;
-      display: block !important;
-    }
-    /* 確定済みドット（強く発光） */
-    .confirmed-ultra {
-      background: var(--neon) !important;
-      box-shadow: 0 0 8px var(--neon), 0 0 15px var(--neon);
-    }
-    /* イベントの文字を隠す（ドットにするため） */
-    .fc-event-title, .fc-event-time { display: none; }
-
-    /* 枠線を透過させてスタイリッシュに */
-    .fc-theme-standard td, .fc-theme-standard th { border: 1px solid rgba(255, 255, 255, 0.05) !important; }
-    .fc-theme-standard .fc-scrollgrid { border: none !important; }
-
-    /* ツールバーボタン */
-    .fc-button { background: transparent !important; border: 1px solid #333 !important; color: var(--neon) !important; border-radius: 12px !important; }
-    .fc-button-active { background: var(--neon) !important; color: #fff !important; }
-
-    /* モーダルUI */
+    /* モーダル */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: flex-end; }
     .modal-content { background: var(--card); width: 100%; max-width: 500px; padding: 25px; border-radius: 30px 30px 0 0; border-top: 4px solid var(--neon); box-sizing: border-box; animation: slideUp 0.3s ease-out; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    
-    h3 { margin-top: 0; text-align: center; color: var(--neon); letter-spacing: 2px; }
-    label { display: block; font-size: 0.8em; color: #666; margin-bottom: 8px; }
-    select, input { width: 100%; padding: 15px; margin-bottom: 20px; background: #222; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 1.1em; box-sizing: border-box; display: block; outline: none; }
+    h3 { margin-top: 0; text-align: center; color: var(--neon); }
+    label { display: block; font-size: 0.8em; color: #777; margin-bottom: 8px; }
+    select, input { width: 100%; padding: 15px; margin-bottom: 20px; background: #222; border: 1px solid #444; border-radius: 12px; color: #fff; font-size: 1.1em; box-sizing: border-box; display: block; outline: none; }
     select:focus, input:focus { border-color: var(--neon); }
-
     .btn { width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-bottom: 10px; display: block; box-sizing: border-box; }
     .btn-save { background: var(--neon); color: #fff; box-shadow: 0 0 15px var(--neon-glow); }
     .btn-confirm { background: #00ffcc; color: #000; }
     .btn-danger { background: #333; color: var(--neon); border: 1px solid var(--neon); }
     .btn-cancel { background: transparent; color: #666; }
-
     .event-list-item { background: #222; padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
     .status-badge { font-size: 0.75em; padding: 5px 10px; border-radius: 8px; font-weight: bold; }
     .is-confirmed { background: var(--neon); color: white; box-shadow: 0 0 10px var(--neon); }
-
     #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
     .spinner { width: 40px; height: 40px; border: 4px solid #222; border-top: 4px solid var(--neon); border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 10px var(--neon); }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -76,27 +43,30 @@
 </head>
 <body>
 
-<div id="loader"><div class="spinner"></div><p style="color:var(--neon); margin-top:15px; font-size:0.8em; letter-spacing:3px;">LOADING</p></div>
+<div id="loader"><div class="spinner"></div><p style="color:var(--neon); margin-top:15px; font-weight:bold;">通信中...</p></div>
+
+<div id="filter-wrapper"><div id="member-filters"></div></div>
+
 <div id="calendar-container"><div id="calendar"></div></div>
 
 <div id="day-modal" class="modal"><div class="modal-content">
-  <h3 id="target-date-title">DATE</h3>
+  <h3 id="target-date-title">日付</h3>
   <div id="day-event-list" style="max-height: 40vh; overflow-y: auto; margin-bottom: 20px;"></div>
   <button class="btn btn-save" onclick="openRegModal()">＋ 新しい希望を登録</button>
   <button class="btn btn-cancel" onclick="hideAllModals()">閉じる</button>
 </div></div>
 
 <div id="reg-modal" class="modal"><div class="modal-content">
-  <h3>ENTRY</h3>
+  <h3>希望登録</h3>
   <label>担当者</label><select id="user-name"></select>
-  <label>開始時間 (15:00〜)</label><select id="start-t"></select>
-  <label>終了時間 (〜最終)</label><select id="end-t"></select>
+  <label>開始時間</label><select id="start-t"></select>
+  <label>終了時間</label><select id="end-t"></select>
   <button class="btn btn-save" onclick="saveEvent()">希望を送信</button>
   <button class="btn btn-cancel" onclick="backToDay()">戻る</button>
 </div></div>
 
 <div id="edit-modal" class="modal"><div class="modal-content">
-  <h3>MANAGE</h3>
+  <h3 id="edit-title">シフト管理</h3>
   <div id="manage-buttons">
     <button id="confirm-btn-trigger" class="btn btn-confirm" onclick="openPinModal()">このシフトを確定する</button>
     <button class="btn btn-danger" onclick="openDeleteConfirm()">この予定を削除</button>
@@ -105,28 +75,28 @@
 </div></div>
 
 <div id="pin-modal" class="modal"><div class="modal-content">
-  <h3>AUTH</h3>
-  <label>暗証番号を入力してください</label>
-  <input type="password" id="pin" pattern="\d*" inputmode="numeric" placeholder="PASSCODE">
+  <h3>管理者認証</h3>
+  <label>暗証番号</label><input type="password" id="pin" pattern="\d*" inputmode="numeric" placeholder="数字4桁">
   <button class="btn btn-save" onclick="executeConfirm()">認証して確定</button>
   <button class="btn btn-cancel" onclick="closePinModal()">キャンセル</button>
 </div></div>
 
 <div id="delete-confirm-modal" class="modal"><div class="modal-content">
-  <h3 style="color:var(--neon);">CONFIRM</h3>
-  <p style="text-align:center; color:#888; margin-bottom:25px; font-size:0.9em;">この予定を削除してもよろしいですか？</p>
+  <h3 style="color:var(--neon);">最終確認</h3>
+  <p style="text-align:center; color:#888; margin-bottom:25px;">この予定を削除してもよろしいですか？</p>
   <button class="btn btn-save" style="background:#cc0000" onclick="finalDeleteAction()">本当に削除する</button>
   <button class="btn btn-cancel" onclick="closeDeleteConfirm()">やめる</button>
 </div></div>
 
 <div id="alert-modal" class="modal"><div class="modal-content">
-  <h3 id="alert-title">INFO</h3>
+  <h3 id="alert-title">通知</h3>
   <p id="alert-msg" style="text-align:center; color:#ccc; margin-bottom:25px;"></p>
   <button class="btn btn-save" onclick="closeAlert()">OK</button>
 </div></div>
 
 <script>
   let calendar; let selectedDateStr; let currentEventId; let allEvents = [];
+  let currentFilterName = null; // 現在選択中のフィルター名
 
   function initTimeSelect() {
     const s = document.getElementById('start-t'); const e = document.getElementById('end-t');
@@ -142,22 +112,66 @@
     calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
       initialView: 'dayGridMonth', locale: 'ja', height: 'auto',
       headerToolbar: { left: 'prev', center: 'title', right: 'next' },
-      dayMaxEvents: 4, 
       eventClassNames: (arg) => arg.event.extendedProps.isConfirmed ? ['confirmed-ultra'] : [],
-      events: (info, success) => google.script.run.withSuccessHandler(data => { allEvents=data; success(data); }).getEvents(),
+      events: (info, success) => google.script.run.withSuccessHandler(data => { 
+        allEvents=data; 
+        success(data);
+        if(currentFilterName) applyFilter(currentFilterName); // データ更新後もフィルターを維持
+      }).getEvents(),
       dateClick: (info) => { selectedDateStr = info.dateStr; openDayModal(info.dateStr); },
       eventClick: (info) => { info.jsEvent.preventDefault(); currentEventId = info.event.id; openEditModal(info.event); }
     });
     calendar.render();
-    google.script.run.withSuccessHandler(m => { const sel = document.getElementById('user-name'); m.forEach(name => sel.add(new Option(name, name))); }).getMembers();
+
+    // メンバー取得とフィルター生成
+    google.script.run.withSuccessHandler(m => { 
+      const sel = document.getElementById('user-name'); 
+      const filterBox = document.getElementById('member-filters');
+      
+      // 全員表示チップ
+      const allChip = document.createElement('span');
+      allChip.className = 'filter-chip active';
+      allChip.innerText = 'ALL';
+      allChip.onclick = () => setFilter(null, allChip);
+      filterBox.appendChild(allChip);
+
+      m.forEach(name => {
+        sel.add(new Option(name, name));
+        const chip = document.createElement('span');
+        chip.className = 'filter-chip';
+        chip.innerText = name;
+        chip.onclick = () => setFilter(name, chip);
+        filterBox.appendChild(chip);
+      });
+    }).getMembers();
   });
 
+  /* フィルターロジック */
+  function setFilter(name, el) {
+    currentFilterName = name;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    applyFilter(name);
+  }
+
+  function applyFilter(name) {
+    calendar.getEvents().forEach(ev => {
+      if (!name || ev.title.includes(`【${name}】`)) {
+        ev.setProp('display', 'auto');
+      } else {
+        ev.setProp('display', 'none');
+      }
+    });
+  }
+
+  /* モーダル表示制御 */
   function openDayModal(dateStr) {
     selectedDateStr = dateStr; document.getElementById('target-date-title').innerText = dateStr;
     const list = document.getElementById('day-event-list'); list.innerHTML = '';
-    const dayEvents = allEvents.filter(e => e.start.startsWith(dateStr));
+    // フィルターがかかっている場合はその人の予定だけ、そうでなければ全員分
+    const dayEvents = allEvents.filter(e => e.start.startsWith(dateStr) && (!currentFilterName || e.title.includes(`【${currentFilterName}】`)));
     dayEvents.sort((a, b) => a.start.localeCompare(b.start));
-    if(!dayEvents.length) list.innerHTML = '<p style="text-align:center; color:#444;">NO SCHEDULE</p>';
+    if(!dayEvents.length) list.innerHTML = '<p style="text-align:center; color:#444;">予定なし</p>';
     dayEvents.forEach(e => {
       const div = document.createElement('div'); div.className = 'event-list-item';
       div.onclick = () => { currentEventId = e.id; openEditModal(e); };
@@ -167,44 +181,29 @@
     hideAllModals(); document.getElementById('day-modal').style.display = 'flex';
   }
 
-  function openRegModal() { hideAllModals(); document.getElementById('reg-modal').style.display = 'flex'; }
-  function openEditModal(e) { 
+  function openRegModal() { 
     hideAllModals(); 
-    currentEventId = e.id || currentEventId; 
-    const isConf = e.extendedProps ? e.extendedProps.isConfirmed : e.title.includes('★確定');
-    document.getElementById('confirm-btn-trigger').style.display = isConf ? 'none' : 'block'; 
-    document.getElementById('edit-modal').style.display = 'flex'; 
+    // ★フィルターで名前が選ばれていれば、セレクトボックスをその名前に固定
+    if (currentFilterName) {
+      document.getElementById('user-name').value = currentFilterName;
+    }
+    document.getElementById('reg-modal').style.display = 'flex'; 
   }
-  
+
+  // --- その他の関数（openEditModal, executeConfirm等）はこれまでの「安定版」と同じ ---
+  function openEditModal(e) { hideAllModals(); currentEventId = e.id || currentEventId; const title = e.title || "詳細"; document.getElementById('edit-title').innerText = title; const isConf = e.extendedProps ? e.extendedProps.isConfirmed : title.includes('★確定'); document.getElementById('confirm-btn-trigger').style.display = isConf ? 'none' : 'block'; document.getElementById('edit-modal').style.display = 'flex'; }
   function openPinModal() { document.getElementById('edit-modal').style.display = 'none'; document.getElementById('pin-modal').style.display = 'flex'; }
   function closePinModal() { document.getElementById('pin-modal').style.display = 'none'; document.getElementById('edit-modal').style.display = 'flex'; }
   function openDeleteConfirm() { document.getElementById('edit-modal').style.display = 'none'; document.getElementById('delete-confirm-modal').style.display = 'flex'; }
   function closeDeleteConfirm() { document.getElementById('delete-confirm-modal').style.display = 'none'; document.getElementById('edit-modal').style.display = 'flex'; }
-
   function showAlert(title, msg) { document.getElementById('alert-title').innerText = title; document.getElementById('alert-msg').innerText = msg; document.getElementById('alert-modal').style.display = 'flex'; }
   function closeAlert() { document.getElementById('alert-modal').style.display = 'none'; }
   function backToDay() { openDayModal(selectedDateStr); }
   function hideAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); document.getElementById('pin').value = ''; }
   function showLoading(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
-
-  function saveEvent() {
-    showLoading(true);
-    google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("SUCCESS", "希望を送信しました"); })
-      .createShiftEvent(selectedDateStr, document.getElementById('start-t').value, document.getElementById('end-t').value, document.getElementById('user-name').value);
-  }
-
-  function executeConfirm() {
-    const pin = document.getElementById('pin').value;
-    if(!pin) return showAlert("ERROR", "暗証番号を入力してください");
-    showLoading(true);
-    google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("SUCCESS", "確定しました"); })
-      .withFailureHandler(err => { showLoading(false); showAlert("ERROR", err.message); }).confirmEvent(currentEventId, pin);
-  }
-
-  function finalDeleteAction() {
-    showLoading(true);
-    google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("SUCCESS", "削除しました"); }).deleteEvent(currentEventId);
-  }
+  function saveEvent() { showLoading(true); google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("成功", "希望を送信しました"); }).createShiftEvent(selectedDateStr, document.getElementById('start-t').value, document.getElementById('end-t').value, document.getElementById('user-name').value); }
+  function executeConfirm() { const pin = document.getElementById('pin').value; if(!pin) return showAlert("エラー", "暗証番号が必要です"); showLoading(true); google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("成功", "シフトを確定しました"); }).withFailureHandler(err => { showLoading(false); showAlert("エラー", err.message); }).confirmEvent(currentEventId, pin); }
+  function finalDeleteAction() { showLoading(true); google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("完了", "削除しました"); }).deleteEvent(currentEventId); }
 </script>
 </body>
 </html>
