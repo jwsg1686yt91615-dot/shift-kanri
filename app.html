@@ -5,211 +5,259 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root { --neon: #ff003c; --neon-glow: rgba(255, 0, 60, 0.8); --bg: #050505; --card: #151515; }
-    body { font-family: sans-serif; background: var(--bg); color: #eee; margin: 0; padding: 0; }
-    
-    /* フィルターエリア */
-    #filter-wrapper { background: #111; padding: 12px; border-bottom: 1px solid #333; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-    .filter-chip { display: inline-block; padding: 10px 20px; margin-right: 10px; border-radius: 25px; background: #222; color: #777; font-size: 0.9em; border: 1px solid #444; cursor: pointer; transition: 0.3s; }
-    .filter-chip.active { background: var(--neon); color: #fff; border-color: var(--neon); box-shadow: 0 0 10px var(--neon-glow); }
-
-    /* カレンダー外枠 */
-    #calendar-container { padding: 5px; background: radial-gradient(circle at top, #1a050a 0%, var(--bg) 80%); }
-    
-    /* ★曜日の視認性強化 */
-    .fc-col-header-cell { 
-      background: #222 !important; 
-      padding: 12px 0 !important; 
+    :root {
+      --neon-red: #ff0033;
+      --neon-blue: #00f2ff;
+      --neon-glow: rgba(255, 0, 51, 0.6);
+      --bg: #050505;
+      --card: rgba(20, 20, 25, 0.95);
     }
-    .fc-col-header-cell-cushion { 
-      color: #fff !important; 
-      font-weight: bold !important; 
-      font-size: 1.1em !important;
-      text-decoration: none !important;
-    }
-    /* 土曜日の色分け */
-    .fc-day-sat .fc-col-header-cell-cushion { color: #0088ff !important; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: #eee; margin: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
 
-    /* イベントデザイン */
-    .fc-event { border: none !important; padding: 3px !important; font-size: 0.85em !important; border-radius: 4px !important; }
-    .confirmed-ultra { background: linear-gradient(45deg, var(--neon), #ff4d79) !important; box-shadow: 0 0 10px var(--neon-glow); font-weight: bold; color: #fff !important; }
+    #filter-wrapper { padding: 15px 10px; overflow-x: auto; white-space: nowrap; display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); scrollbar-width: none; background: #000; }
+    #filter-wrapper::-webkit-scrollbar { display: none; }
+    .filter-chip { display: inline-block; padding: 8px 18px; border-radius: 20px; background: #1a1a1a; font-size: 0.85rem; border: 1px solid #333; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #888; }
+    .filter-chip.active { background: var(--neon-red); border-color: var(--neon-red); box-shadow: 0 0 12px var(--neon-glow); color: #fff; transform: scale(1.05); }
 
-    /* モーダル基本 */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: flex-end; }
-    .modal-content { background: var(--card); width: 100%; max-width: 500px; padding: 25px; border-radius: 30px 30px 0 0; border-top: 4px solid var(--neon); box-sizing: border-box; animation: slideUp 0.3s ease-out; }
+    #calendar-container { padding: 10px; padding-bottom: 100px; }
+    .fc-col-header-cell { background: #111 !important; padding: 12px 0 !important; color: #fff !important; }
+    .fc-day-sat { color: #0088ff !important; } 
+    .fc-event { border: none !important; padding: 2px 4px !important; font-size: 0.75rem !important; border-radius: 4px !important; }
+    .confirmed-ultra { background: var(--neon-red) !important; color: #fff !important; box-shadow: 0 0 8px var(--neon-glow); font-weight: bold; }
+    .pending-shift { background: rgba(0, 242, 255, 0.2) !important; border-left: 3px solid var(--neon-blue) !important; color: var(--neon-blue) !important; }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: flex-end; }
+    .modal-content { background: var(--card); backdrop-filter: blur(15px); width: 100%; max-width: 500px; padding: 30px 25px 45px; border-radius: 30px 30px 0 0; border-top: 2px solid var(--neon-red); box-sizing: border-box; animation: slideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     
-    h3 { margin-top: 0; text-align: center; color: var(--neon); }
-    label { display: block; font-size: 0.8em; color: #777; margin-bottom: 8px; }
-    select, input { width: 100%; padding: 15px; margin-bottom: 20px; background: #222; border: 1px solid #444; border-radius: 12px; color: #fff; font-size: 1.1em; box-sizing: border-box; display: block; outline: none; }
-    select:focus, input:focus { border-color: var(--neon); }
+    select, input { width: 100%; padding: 16px; margin-bottom: 20px; background: #111; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 16px; outline: none; box-sizing: border-box; }
+    
+    /* ボタンデザイン */
+    .btn { width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 12px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+    .btn:active { transform: scale(0.95); }
 
-    .btn { width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-bottom: 10px; display: block; box-sizing: border-box; }
-    .btn-save { background: var(--neon); color: #fff; box-shadow: 0 0 15px var(--neon-glow); }
-    .btn-confirm { background: #00ffcc; color: #000; }
-    .btn-danger { background: #333; color: var(--neon); border: 1px solid var(--neon); }
-    .btn-cancel { background: transparent; color: #666; }
+    /* ★ 希望を登録ボタン（枠線ネオンに変更） */
+    .btn-save { 
+      background: transparent; 
+      color: var(--neon-red); 
+      border: 2px solid var(--neon-red);
+      box-shadow: inset 0 0 5px var(--neon-glow), 0 0 5px var(--neon-glow);
+    }
+    .btn-save:active { 
+      background: var(--neon-red); 
+      color: #fff; 
+      box-shadow: 0 0 20px var(--neon-glow);
+    }
 
-    .event-list-item { background: #222; padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-    .status-badge { font-size: 0.75em; padding: 5px 10px; border-radius: 8px; font-weight: bold; }
-    .is-confirmed { background: var(--neon); color: white; box-shadow: 0 0 10px var(--neon); }
+    /* シフト確定ボタン（青ネオン） */
+    .btn-confirm { background: var(--neon-blue); color: #000; }
+    
+    .btn-danger { background: #1a1a1a; color: var(--neon-red); border: 1px solid var(--neon-red); }
+    .btn-cancel { background: transparent; color: #777; }
 
-    #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #222; border-top: 4px solid var(--neon); border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 10px var(--neon); }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* 一覧アイテムの見分け強化 */
+    .event-list-item { padding: 16px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+    .event-list-item:active { transform: scale(0.97); }
+    
+    /* ★ 確定済み（ベタ塗り赤） */
+    .item-confirmed { background: var(--neon-red); border: 1px solid var(--neon-red); color: #fff; box-shadow: 0 0 10px var(--neon-glow); }
+    /* ★ 希望中（暗い枠線） */
+    .item-pending { background: rgba(255,255,255,0.03); border: 1px solid #333; color: #aaa; }
+    
+    .status-badge { font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; }
+    .badge-confirmed { background: #fff; color: var(--neon-red); }
+    .badge-pending { border: 1px solid var(--neon-blue); color: var(--neon-blue); }
+
+    #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    .spinner { width: 45px; height: 45px; border: 3px solid transparent; border-top-color: var(--neon-red); border-right-color: var(--neon-red); border-radius: 50%; animation: spin 0.7s linear infinite; box-shadow: 0 0 10px var(--neon-glow); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #toast { visibility: hidden; min-width: 220px; background: var(--neon-red); color: #fff; text-align: center; border-radius: 50px; padding: 14px; position: fixed; z-index: 2000; bottom: 40px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 15px var(--neon-glow); font-weight: bold; }
+    #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+    @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 40px; opacity: 1; } }
+    @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: 0; opacity: 0; } }
   </style>
 </head>
 <body>
 
-<div id="loader"><div class="spinner"></div><p style="color:var(--neon); margin-top:15px; font-weight:bold;">通信中...</p></div>
+<div id="loader"><div class="spinner"></div><p style="color:var(--neon-red); margin-top:15px; font-family:'Orbitron'; letter-spacing:2px; font-size:0.8rem;">CONNECTING</p></div>
+<div id="toast">DONE</div>
 
 <div id="filter-wrapper"><div id="member-filters"></div></div>
 <div id="calendar-container"><div id="calendar"></div></div>
 
 <div id="day-modal" class="modal"><div class="modal-content">
-  <h3 id="target-date-title">日付</h3>
-  <div id="day-event-list" style="max-height: 40vh; overflow-y: auto; margin-bottom: 20px;"></div>
-  <button class="btn btn-save" onclick="openRegModal()">＋ 新しい希望を登録</button>
+  <h3 id="target-date-title" style="text-align:center; font-family:'Orbitron'; color:var(--neon-red); margin-bottom:20px;">DATE</h3>
+  <div id="day-event-list" style="max-height: 45vh; overflow-y: auto; margin-bottom: 20px;"></div>
+  <button class="btn btn-save" onclick="openRegModal()">＋ 希望を登録</button>
   <button class="btn btn-cancel" onclick="hideAllModals()">閉じる</button>
 </div></div>
 
 <div id="reg-modal" class="modal"><div class="modal-content">
-  <h3>希望登録</h3>
-  <label>担当者</label><select id="user-name"></select>
-  <label>開始時間</label><select id="start-t"></select>
-  <label>終了時間</label><select id="end-t"></select>
-  <button class="btn btn-save" onclick="saveEvent()">希望を送信</button>
+  <h3 style="font-family:'Orbitron';">REQUEST</h3>
+  <label>スタッフ名</label><select id="user-name"></select>
+  <div style="display:flex; gap:10px;">
+    <div style="flex:1;"><label>開始</label><select id="start-t"></select></div>
+    <div style="flex:1;"><label>終了</label><select id="end-t"></select></div>
+  </div>
+  <button class="btn btn-save" onclick="saveEvent()" style="background:var(--neon-red); color:#fff;">申請を送信</button>
   <button class="btn btn-cancel" onclick="backToDay()">戻る</button>
 </div></div>
 
 <div id="edit-modal" class="modal"><div class="modal-content">
-  <h3 id="edit-title">管理</h3>
-  <div id="manage-buttons">
-    <button id="confirm-btn-trigger" class="btn btn-confirm" onclick="openPinModal()">シフト確定</button>
-    <button class="btn btn-danger" onclick="openDeleteConfirm()">予定削除</button>
-  </div>
+  <h3 id="edit-title" style="font-family:'Orbitron'; color:var(--neon-blue);">MANAGE</h3>
+  <button id="confirm-btn-trigger" class="btn btn-confirm" onclick="openPinModal()">シフト確定</button>
+  <button class="btn btn-danger" onclick="openDeleteConfirmModal()">予定を削除する</button>
   <button class="btn btn-cancel" onclick="backToDay()">戻る</button>
 </div></div>
 
-<div id="pin-modal" class="modal"><div class="modal-content">
-  <h3>管理者認証</h3>
-  <label>暗証番号</label><input type="password" id="pin" pattern="\d*" inputmode="numeric" placeholder="数字4桁">
-  <button class="btn btn-save" onclick="executeConfirm()">認証して確定</button>
-  <button class="btn btn-cancel" onclick="closePinModal()">キャンセル</button>
-</div></div>
-
 <div id="delete-confirm-modal" class="modal"><div class="modal-content">
-  <h3 style="color:var(--neon);">最終確認</h3>
-  <p style="text-align:center; color:#888; margin-bottom:25px;">削除してもよろしいですか？</p>
-  <button class="btn btn-save" style="background:#cc0000" onclick="finalDeleteAction()">削除する</button>
-  <button class="btn btn-cancel" onclick="closeDeleteConfirm()">やめる</button>
+  <h3 style="font-family:'Orbitron'; color:var(--neon-red);">DELETE?</h3>
+  <p style="text-align:center; color:#888; margin-bottom:25px; font-size:0.9rem;">この予定を完全に削除しますか？</p>
+  <button class="btn" style="background:#cc0000; color:#fff;" onclick="executeDelete()">削除を確定する</button>
+  <button class="btn btn-cancel" onclick="closeDeleteConfirmModal()">キャンセル</button>
 </div></div>
 
-<div id="alert-modal" class="modal"><div class="modal-content">
-  <h3 id="alert-title">通知</h3>
-  <p id="alert-msg" style="text-align:center; color:#ccc; margin-bottom:25px;"></p>
-  <button class="btn btn-save" onclick="closeAlert()">OK</button>
+<div id="pin-modal" class="modal"><div class="modal-content">
+  <h3>ADMIN PIN</h3>
+  <input type="password" id="pin" pattern="\d*" inputmode="numeric" placeholder="数字4桁">
+  <button class="btn btn-confirm" onclick="executeConfirm()" style="width:100%">認証して確定</button>
+  <button class="btn btn-cancel" onclick="hideAllModals()">キャンセル</button>
 </div></div>
 
 <script>
-  let calendar; let selectedDateStr; let currentEventId; let allEvents = [];
-  let currentFilterName = null;
+  let calendar; let selectedDateStr; let currentEventId; let currentFilter = null;
 
-  function initTimeSelect() {
-    const s = document.getElementById('start-t'); const e = document.getElementById('end-t');
-    for(let h=15; h<24; h++) { ['00','30'].forEach(m => s.add(new Option(`${h}:${m}`, `${h}:${m}`))); }
-    for(let h=15; h<24; h++) { ['00','30'].forEach(m => { if(!(h==15&&m=='00')) e.add(new Option(`${h}:${m}`, `${h}:${m}`)); }); }
-    for(let h=0; h<=2; h++) { ['00','30'].forEach(m => e.add(new Option(`${h}:${m}`, `${h}:${m}`))); }
-    e.add(new Option("最終まで", "最終まで"));
-    s.value = "19:00"; e.value = "最終まで";
-  }
+  function hapticFeedback() { if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15); }
+  function showToast(msg) { const t = document.getElementById("toast"); t.innerText = msg; t.className = "show"; setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000); }
+  function toggleLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
 
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', () => {
     initTimeSelect();
-    calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-      initialView: 'dayGridMonth', 
-      locale: 'ja', 
-      height: 'auto',
-      hiddenDays: [0], // ★日曜（0）を表示しない
-      headerToolbar: { left: 'prev', center: 'title', right: 'next' },
-      eventClassNames: (arg) => arg.event.extendedProps.isConfirmed ? ['confirmed-ultra'] : [],
-      events: (info, success) => google.script.run.withSuccessHandler(data => { 
-        allEvents=data; 
-        success(data);
-        if(currentFilterName) applyFilter(currentFilterName);
-      }).getEvents(),
-      dateClick: (info) => { selectedDateStr = info.dateStr; openDayModal(info.dateStr); },
-      eventClick: (info) => { info.jsEvent.preventDefault(); currentEventId = info.event.id; openEditModal(info.event); }
-    });
-    calendar.render();
-
-    google.script.run.withSuccessHandler(m => { 
-      const sel = document.getElementById('user-name'); 
-      const filterBox = document.getElementById('member-filters');
-      const allChip = document.createElement('span');
-      allChip.className = 'filter-chip active';
-      allChip.innerText = '全員表示';
-      allChip.onclick = () => setFilter(null, allChip);
-      filterBox.appendChild(allChip);
-
-      m.forEach(name => {
-        sel.add(new Option(name, name));
-        const chip = document.createElement('span');
-        chip.className = 'filter-chip';
-        chip.innerText = name;
-        chip.onclick = () => setFilter(name, chip);
-        filterBox.appendChild(chip);
-      });
-    }).getMembers();
+    initCalendar();
+    fetchMembers();
   });
 
-  function setFilter(name, el) {
-    currentFilterName = name;
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    applyFilter(name);
-  }
-
-  function applyFilter(name) {
-    calendar.getEvents().forEach(ev => {
-      if (!name || ev.title.includes(`【${name}】`)) {
-        ev.setProp('display', 'auto');
-      } else {
-        ev.setProp('display', 'none');
-      }
+  function initCalendar() {
+    calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+      initialView: 'dayGridMonth', locale: 'ja', height: 'auto',
+      hiddenDays: [0],
+      headerToolbar: { left: 'prev', center: 'title', right: 'next' },
+      dayCellContent: (e) => e.dayNumberText.replace('日',''),
+      eventClassNames: (arg) => arg.event.extendedProps.isConfirmed ? ['confirmed-ultra'] : ['pending-shift'],
+      events: (info, success) => {
+        toggleLoader(true);
+        google.script.run.withSuccessHandler(data => {
+          success(currentFilter ? data.filter(e => e.title.includes(`【${currentFilter}】`)) : data);
+          setTimeout(() => toggleLoader(false), 200);
+        }).getEvents();
+      },
+      dateClick: (info) => { hapticFeedback(); selectedDateStr = info.dateStr; openDayModal(info.dateStr); },
+      eventClick: (info) => { hapticFeedback(); info.jsEvent.preventDefault(); currentEventId = info.event.id; openEditModal(info.event); }
     });
+    calendar.render();
   }
 
-  function openDayModal(dateStr) {
-    selectedDateStr = dateStr; document.getElementById('target-date-title').innerText = dateStr;
-    const list = document.getElementById('day-event-list'); list.innerHTML = '';
-    const dayEvents = allEvents.filter(e => e.start.startsWith(dateStr) && (!currentFilterName || e.title.includes(`【${currentFilterName}】`)));
-    dayEvents.sort((a, b) => a.start.localeCompare(b.start));
-    if(!dayEvents.length) list.innerHTML = '<p style="text-align:center; color:#444;">予定なし</p>';
-    dayEvents.forEach(e => {
-      const div = document.createElement('div'); div.className = 'event-list-item';
-      div.onclick = () => { currentEventId = e.id; openEditModal(e); };
-      div.innerHTML = `<div><strong>${e.title}</strong></div><span class="status-badge ${e.extendedProps.isConfirmed ? 'is-confirmed' : ''}">${e.extendedProps.isConfirmed ? '確定' : '希望'}</span>`;
+  function fetchMembers() {
+    google.script.run.withSuccessHandler(m => {
+      const sel = document.getElementById('user-name');
+      const filterBox = document.getElementById('member-filters');
+      addFilterChip('全員', null, true);
+      m.forEach(name => {
+        sel.add(new Option(name, name));
+        addFilterChip(name, name, false);
+      });
+    }).getMembers();
+  }
+
+  function addFilterChip(label, val, isActive) {
+    const chip = document.createElement('div');
+    chip.className = `filter-chip ${isActive ? 'active' : ''}`;
+    chip.innerText = label;
+    chip.onclick = () => {
+      if (currentFilter === val) return;
+      hapticFeedback();
+      toggleLoader(true);
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = val;
+      calendar.refetchEvents();
+    };
+    document.getElementById('member-filters').appendChild(chip);
+  }
+
+  function openDayModal(date) {
+    document.getElementById('target-date-title').innerText = date;
+    const list = document.getElementById('day-event-list');
+    list.innerHTML = '';
+    const events = calendar.getEvents().filter(e => e.startStr.startsWith(date));
+    if(!events.length) list.innerHTML = '<p style="text-align:center; opacity:0.3; padding:20px;">予定なし</p>';
+    
+    events.forEach(e => {
+      const isConfirmed = e.extendedProps.isConfirmed;
+      const div = document.createElement('div');
+      div.className = `event-list-item ${isConfirmed ? 'item-confirmed' : 'item-pending'}`;
+      div.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <span style="font-weight:bold; font-size:1rem;">${e.title}</span>
+        </div>
+        <span class="status-badge ${isConfirmed ? 'badge-confirmed' : 'badge-pending'}">
+          ${isConfirmed ? '確定済' : '希望'}
+        </span>
+      `;
+      div.onclick = () => { hapticFeedback(); currentEventId = e.id; openEditModal(e); };
       list.appendChild(div);
     });
     hideAllModals(); document.getElementById('day-modal').style.display = 'flex';
   }
 
-  function openRegModal() { hideAllModals(); if (currentFilterName) { document.getElementById('user-name').value = currentFilterName; } document.getElementById('reg-modal').style.display = 'flex'; }
-  function openEditModal(e) { hideAllModals(); currentEventId = e.id || currentEventId; const title = e.title || "詳細"; document.getElementById('edit-title').innerText = title; const isConf = e.extendedProps ? e.extendedProps.isConfirmed : title.includes('★確定'); document.getElementById('confirm-btn-trigger').style.display = isConf ? 'none' : 'block'; document.getElementById('edit-modal').style.display = 'flex'; }
-  function openPinModal() { document.getElementById('edit-modal').style.display = 'none'; document.getElementById('pin-modal').style.display = 'flex'; }
-  function closePinModal() { document.getElementById('pin-modal').style.display = 'none'; document.getElementById('edit-modal').style.display = 'flex'; }
-  function openDeleteConfirm() { document.getElementById('edit-modal').style.display = 'none'; document.getElementById('delete-confirm-modal').style.display = 'flex'; }
-  function closeDeleteConfirm() { document.getElementById('delete-confirm-modal').style.display = 'none'; document.getElementById('edit-modal').style.display = 'flex'; }
-  function showAlert(title, msg) { document.getElementById('alert-title').innerText = title; document.getElementById('alert-msg').innerText = msg; document.getElementById('alert-modal').style.display = 'flex'; }
-  function closeAlert() { document.getElementById('alert-modal').style.none; document.getElementById('alert-modal').style.display = 'none'; }
-  function backToDay() { openDayModal(selectedDateStr); }
-  function hideAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); document.getElementById('pin').value = ''; }
-  function showLoading(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
-  function saveEvent() { showLoading(true); google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("成功", "送信しました"); }).createShiftEvent(selectedDateStr, document.getElementById('start-t').value, document.getElementById('end-t').value, document.getElementById('user-name').value); }
-  function executeConfirm() { const pin = document.getElementById('pin').value; if(!pin) return showAlert("エラー", "番号が必要です"); showLoading(true); google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("成功", "確定しました"); }).withFailureHandler(err => { showLoading(false); showAlert("エラー", err.message); }).confirmEvent(currentEventId, pin); }
-  function finalDeleteAction() { showLoading(true); google.script.run.withSuccessHandler(() => { showLoading(false); hideAllModals(); calendar.refetchEvents(); showAlert("完了", "削除しました"); }).deleteEvent(currentEventId); }
+  function openRegModal() { hapticFeedback(); hideAllModals(); if(currentFilter) document.getElementById('user-name').value = currentFilter; document.getElementById('reg-modal').style.display = 'flex'; }
+  function openEditModal(e) { 
+    hideAllModals(); 
+    document.getElementById('edit-title').innerText = e.title;
+    document.getElementById('confirm-btn-trigger').style.display = (e.extendedProps && e.extendedProps.isConfirmed) ? 'none' : 'block';
+    document.getElementById('edit-modal').style.display = 'flex'; 
+  }
+  
+  function openDeleteConfirmModal() { hapticFeedback(); document.getElementById('edit-modal').style.display = 'none'; document.getElementById('delete-confirm-modal').style.display = 'flex'; }
+  function closeDeleteConfirmModal() { hapticFeedback(); document.getElementById('delete-confirm-modal').style.display = 'none'; document.getElementById('edit-modal').style.display = 'flex'; }
+  function openPinModal() { hapticFeedback(); document.getElementById('edit-modal').style.display = 'none'; document.getElementById('pin-modal').style.display = 'flex'; }
+  function hideAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+  function backToDay() { hapticFeedback(); openDayModal(selectedDateStr); }
+
+  function saveEvent() {
+    hapticFeedback(); toggleLoader(true);
+    google.script.run.withSuccessHandler(() => {
+      toggleLoader(false); showToast("申請完了"); calendar.refetchEvents(); hideAllModals();
+    }).createShiftEvent(selectedDateStr, document.getElementById('start-t').value, document.getElementById('end-t').value, document.getElementById('user-name').value);
+  }
+
+  function executeConfirm() {
+    hapticFeedback(); toggleLoader(true);
+    google.script.run.withSuccessHandler(() => {
+      toggleLoader(false); showToast("確定完了"); calendar.refetchEvents(); hideAllModals();
+    }).withFailureHandler(err => {
+      toggleLoader(false); alert(err.message);
+    }).confirmEvent(currentEventId, document.getElementById('pin').value);
+  }
+
+  function executeDelete() {
+    hapticFeedback(); toggleLoader(true);
+    google.script.run.withSuccessHandler(() => {
+      toggleLoader(false); showToast("削除完了"); calendar.refetchEvents(); hideAllModals();
+    }).deleteEvent(currentEventId);
+  }
+
+  function initTimeSelect() {
+    const s = document.getElementById('start-t'), e = document.getElementById('end-t');
+    for(let h=15; h<24; h++) [0,30].forEach(m => s.add(new Option(`${h}:${m.toString().padStart(2,'0')}`, `${h}:${m.toString().padStart(2,'0')}`)));
+    for(let h=18; h<24; h++) [0,30].forEach(m => e.add(new Option(`${h}:${m.toString().padStart(2,'0')}`, `${h}:${m.toString().padStart(2,'0')}`)));
+    for(let h=0; h<6; h++) [0,30].forEach(m => e.add(new Option(`${h}:${m.toString().padStart(2,'0')}`, `${h}:${m.toString().padStart(2,'0')}`)));
+    e.add(new Option("最終まで", "最終まで"));
+    s.value = "19:00"; e.value = "最終まで";
+  }
 </script>
 </body>
 </html>
