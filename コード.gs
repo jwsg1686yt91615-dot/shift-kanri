@@ -8,7 +8,7 @@ function doGet() {
 }
 
 function getMembers() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("スタッフ名簿");
   const lastRow = sheet.getLastRow();
   if (lastRow === 0) return [];
   return sheet.getRange(1, 1, lastRow, 1).getValues().flat().filter(String);
